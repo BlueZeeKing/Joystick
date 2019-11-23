@@ -13,3 +13,5 @@ Then add joystick.js to your rot or static file and it will work.
 You can call on the variable `direction` to see the direction of the joystick in degrees.
 
 Directly up is 0 and to the left is 90.
+
+### It also must be on a background with color or you have to change the color ###
