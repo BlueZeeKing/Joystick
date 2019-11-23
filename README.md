@@ -16,7 +16,7 @@ Directly up is 0 and to the left is 90.
 
 ##### It also must be on a background with color or you have to change the color #####
 
-#### To change the color change the lines:####
+#### To change the color change the lines: ####
 
 ```javascript
 var bigColor = "rgba(255, 255, 255, 0.17)";
