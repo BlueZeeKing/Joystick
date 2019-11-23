@@ -14,4 +14,15 @@ You can call on the variable `direction` to see the direction of the joystick in
 
 Directly up is 0 and to the left is 90.
 
-### It also must be on a background with color or you have to change the color ###
+##### It also must be on a background with color or you have to change the color #####
+
+#### To change the color change the lines:####
+
+```javascript
+var bigColor = "rgba(255, 255, 255, 0.17)";
+var smallColor = "rgba(255, 255, 255, 0.3)";
+```
+
+#### To whatever you want! ####
+
+`bigColor` is the outer ring and `smallColor` is the inner ball.

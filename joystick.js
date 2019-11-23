@@ -10,6 +10,9 @@ height = window.screen.height;
 var canvas = canvasDOM.getContext("2d");
 var direction = false;
 
+var bigColor = "rgba(255, 255, 255, 0.17)";
+var smallColor = "rgba(255, 255, 255, 0.3)";
+
 var go = false;
 
 var bigSize = 35;
@@ -33,19 +36,19 @@ var circleX = 0;
 var circleY = 0;
 
 canvas.beginPath();
-canvas.fillStyle = "rgba(255, 255, 255, 0.17)";
+canvas.fillStyle = bigColor;
 canvas.arc(width / 2, height / 2, width / 100 * bigSize, 0, 2 * Math.PI);
 canvas.fill();
 
 canvas.beginPath();
-canvas.fillStyle = "rgba(255, 255, 255, 0.3)";
+canvas.fillStyle = smallColor;
 canvas.arc(width / 2, height / 2, width / 100 * smallSize, 0, 2 * Math.PI);
 canvas.fill();
 
 function clear() {
     canvas.clearRect(0,0,width,height);
     canvas.beginPath();
-    canvas.fillStyle = "rgba(255, 255, 255, 0.17)";
+    canvas.fillStyle = bigColor;
     canvas.arc(width / 2, height / 2, width / 100 * bigSize, 0, 2 * Math.PI);
     canvas.fill();
 }
@@ -78,7 +81,7 @@ function move(e) {
         if (distance(width / 2, width / 2, x, y) <= width / 100 * bigSize) {
             clear();
             canvas.beginPath();
-            canvas.fillStyle = "rgba(255, 255, 255, 0.3)";
+            canvas.fillStyle = smallColor;
             canvas.arc(x, y, width / 100 * smallSize, 0, 2 * Math.PI);
             canvas.fill();
         } else {
@@ -87,14 +90,14 @@ function move(e) {
                     direction = 180;
                     clear();
                     canvas.beginPath();
-                    canvas.fillStyle = "rgba(255, 255, 255, 0.3)";
+                    canvas.fillStyle = smallColor;
                     canvas.arc(width/2, height/2+(width/100*bigSize), width / 100 * smallSize, 0, 2 * Math.PI);
                     canvas.fill();
                 } else {
                     direction = 0;
                     clear();
                     canvas.beginPath();
-                    canvas.fillStyle = "rgba(255, 255, 255, 0.3)";
+                    canvas.fillStyle = smallColor;
                     canvas.arc(width / 2, height / 2 - (width / 100 * bigSize), width / 100 * smallSize, 0, 2 * Math.PI);
                     canvas.fill();
                 }
@@ -116,7 +119,7 @@ function move(e) {
                 
                 clear();
                 canvas.beginPath();
-                canvas.fillStyle = "rgba(255, 255, 255, 0.3)";
+                canvas.fillStyle = smallColor;
                 canvas.arc(newX, newY, width / 100 * smallSize, 0, 2 * Math.PI);
                 canvas.fill();
             }
@@ -142,7 +145,7 @@ canvasDOM.addEventListener("touchstart", function(e) {
         go = true;
         clear();
         canvas.beginPath();
-        canvas.fillStyle = "rgba(255, 255, 255, 0.3)";
+        canvas.fillStyle = smallColor;
         canvas.arc(x, y, width / 100 * smallSize, 0, 2 * Math.PI);
         canvas.fill();
     }
@@ -155,7 +158,7 @@ canvasDOM.addEventListener("mousedown", function (e) {
         go = true;
         clear();
         canvas.beginPath();
-        canvas.fillStyle = "rgba(255, 255, 255, 0.3)";
+        canvas.fillStyle = smallColor;
         canvas.arc(x, y, width / 100 * smallSize, 0, 2 * Math.PI);
         canvas.fill();
     }
@@ -165,7 +168,7 @@ document.addEventListener("touchend", function() {
     go = false;
     clear();
     canvas.beginPath();
-    canvas.fillStyle = "rgba(255, 255, 255, 0.3)";
+    canvas.fillStyle = smallColor;
     canvas.arc(width / 2, height / 2, width / 100 * smallSize, 0, 2 * Math.PI);
     canvas.fill();
     direction = false;
@@ -175,7 +178,7 @@ document.addEventListener("mouseup", function () {
     go = false;
     clear();
     canvas.beginPath();
-    canvas.fillStyle = "rgba(255, 255, 255, 0.3)";
+    canvas.fillStyle = smallColor;
     canvas.arc(width / 2, height / 2, width / 100 * smallSize, 0, 2 * Math.PI);
     canvas.fill();
     direction = false;
