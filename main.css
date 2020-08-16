@@ -5,13 +5,9 @@ html, body {
 
 body {
     position: fixed;
+    background-color: rgb(0, 0, 41);
 }
 
 canvas {
     margin: 50px;
-}
-
-img {
-    position: fixed;
-    z-index: -1;
 }
