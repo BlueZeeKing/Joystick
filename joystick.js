@@ -1,196 +1,89 @@
-var canvasDOM = document.getElementById("joystick");
+class Joystick {
+    constructor(canvasDOM, bigColor = "rgba(255, 255, 255, 0.17)", smallColor = "rgba(255, 255, 255, 0.3)", smallSize = (canvasDOM.width*.16)) { // create the constructor
+        this.canvasDOM = canvasDOM
+        this.canvas = canvasDOM.getContext('2d') // create the canvas objects
+        
+        this.bigColor = bigColor // set the color and size of the circles
+        this.bigSize = this.canvasDOM.width/2 - smallSize
+        this.smallColor = smallColor
+        this.smallSize = smallSize
 
-var width = canvasDOM.width;
-var height = canvasDOM.height;
-/*
-width = window.screen.height;
-height = window.screen.height;
-*/
+        this.pos = 0 // set up the variable that hold data about the state of the joystick
+        this.clicked = false
 
-var canvas = canvasDOM.getContext("2d");
-var direction = false;
+        this.drawCircle(this.canvasDOM.width / 2, this.canvasDOM.height / 2, this.bigSize, this.bigColor) // draw the circles
+        this.drawCircle(this.canvasDOM.width / 2, this.canvasDOM.height / 2, this.smallSize, this.smallColor)
 
-var bigColor = "rgba(255, 255, 255, 0.17)";
-var smallColor = "rgba(255, 255, 255, 0.3)";
+        document.addEventListener('mousemove', this.move.bind(this)) // bind the move function to when the mouse moves
+        canvasDOM.addEventListener('mousedown', function (e) { // when the mouse pressed
+            this.clicked = true // set clicked to true
+            this.move(e) // and update the circles
+        }.bind(this))
+        document.addEventListener('mouseup', function (e) { // when the mouse is no longer pressed
+            this.clicked = false // set clicked to false
+            this.clear() // reset the circles
+            this.drawCircle(this.canvasDOM.width / 2, this.canvasDOM.height / 2, this.bigSize, this.bigColor)
+            this.drawCircle(this.canvasDOM.width / 2, this.canvasDOM.height / 2, this.smallSize, this.smallColor)
+        }.bind(this))
 
-var go = false;
+        document.addEventListener('touchmove', this.move.bind(this)) // for mobile
+        canvasDOM.addEventListener('touchstart', function (e) {
+            this.clicked = true
+            this.move(e)
+        }.bind(this))
+        document.addEventListener('touchend', function (e) {
+            this.clicked = false
+            this.clear()
+            this.drawCircle(this.canvasDOM.width / 2, this.canvasDOM.height / 2, this.bigSize, this.bigColor)
+            this.drawCircle(this.canvasDOM.width / 2, this.canvasDOM.height / 2, this.smallSize, this.smallColor)
+        }.bind(this))
+    }
 
-var bigSize = 35;
-var smallSize = 14;
+    clear() {
+        this.canvas.clearRect(0, 0, this.canvasDOM.width, this.canvasDOM.height) // create a function that clears the screen
+    } 
 
-function squared(num) {
-    return Math.pow(num, 2);
-}
+    drawCircle(x, y, r, color) { // draw a circle of a certain size at a certan position and with a certain color
+        this.canvas.beginPath();
+        this.canvas.fillStyle = color;
+        this.canvas.arc(x, y, r, 0, 2 * Math.PI);
+        this.canvas.fill();
+    }
 
-function toDeg (rad) {
-    return rad * 180 / Math.PI;
-}
+    radians(x) { // change x degrees to radians
+        return x * (Math.PI / 180);
+    }
 
-function solve(slope) {
-    num1 = squared(slope)+1;
-    num1 = squared((width/100)*bigSize) / num1;
-    return Math.sqrt(num1);
-}
+    degrees(x) { // change x radians to degrees
+        return x * (180 / Math.PI);
+    }
+    
+    move(e) { // when the mouse is moved
+        if (this.clicked == true) { // if it is clicked
+            this.clear() // update the big circle and clear the screen
+            this.drawCircle(this.canvasDOM.width / 2, this.canvasDOM.height / 2, this.bigSize, this.bigColor)
+            let rawX = e.pageX - this.canvasDOM.offsetLeft // get the x and y coords of the mouse
+            let rawY = e.pageY - this.canvasDOM.offsetTop
 
-var circleX = 0;
-var circleY = 0;
+            let x = rawX - this.canvasDOM.width / 2; // make them relative to the center
+            let y = rawY - this.canvasDOM.height / 2;
 
-canvas.beginPath();
-canvas.fillStyle = bigColor;
-canvas.arc(width / 2, height / 2, width / 100 * bigSize, 0, 2 * Math.PI);
-canvas.fill();
-
-canvas.beginPath();
-canvas.fillStyle = smallColor;
-canvas.arc(width / 2, height / 2, width / 100 * smallSize, 0, 2 * Math.PI);
-canvas.fill();
-
-function clear() {
-    canvas.clearRect(0,0,width,height);
-    canvas.beginPath();
-    canvas.fillStyle = bigColor;
-    canvas.arc(width / 2, height / 2, width / 100 * bigSize, 0, 2 * Math.PI);
-    canvas.fill();
-}
-
-function move(e) {
-
-    if (go == true) {
-
-        let x = e.pageX - canvasDOM.offsetLeft;
-        let y = e.pageY - canvasDOM.offsetTop;
-
-        let slope = (y - height/2) / (x - width/2);
-        direction = toDeg(Math.atan(slope));
-        if (x > width/2 && y > width/2) {
-            direction = 270 - direction;
-        } else if (x > width / 2 && y < height / 2) {
-            direction = 270 - direction;
-        } else if (x < width / 2 && y < height / 2) {
-            direction = 90 - direction;
-        } else if (x < width / 2 && y > height / 2) {
-            direction = 90 - direction;
-        } else if (y == height / 2) {
-            if (x > width/2) {
-                direction = 270;
+            if (Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) < this.bigSize) { // if the mouse is inside the big circle
+                this.drawCircle(rawX, rawY, this.smallSize, this.smallColor) // draw the small circle where the mouse is
             } else {
-                direction = 90;
+                let scalingFactor = this.bigSize / Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2)) // otherwise draw the circle where the mouse would be if it is in the circle
+                let nX = x * scalingFactor
+                let nY = y * scalingFactor
+                this.drawCircle(nX + (this.canvasDOM.width / 2), nY + (this.canvasDOM.height / 2), this.smallSize, this.smallColor)
+            }
+            if (x > 0) { // set the pos to the angle between left and the circle
+                this.pos = Math.round(this.degrees(Math.asin((Math.sin(this.radians(90)) / Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))) * y)))
+            } else {
+                this.pos = Math.round(this.degrees(Math.asin((Math.sin(this.radians(90)) / Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))) * y)))*-1 + 180
+            }
+            if (this.pos < 0) { // clean up the pos
+                this.pos = 360 + this.pos
             }
         }
-
-        if (distance(width / 2, width / 2, x, y) <= width / 100 * bigSize) {
-            clear();
-            canvas.beginPath();
-            canvas.fillStyle = smallColor;
-            canvas.arc(x, y, width / 100 * smallSize, 0, 2 * Math.PI);
-            canvas.fill();
-        } else {
-            if (x == width/2) {
-                if (y>width/2) {
-                    direction = 180;
-                    clear();
-                    canvas.beginPath();
-                    canvas.fillStyle = smallColor;
-                    canvas.arc(width/2, height/2+(width/100*bigSize), width / 100 * smallSize, 0, 2 * Math.PI);
-                    canvas.fill();
-                } else {
-                    direction = 0;
-                    clear();
-                    canvas.beginPath();
-                    canvas.fillStyle = smallColor;
-                    canvas.arc(width / 2, height / 2 - (width / 100 * bigSize), width / 100 * smallSize, 0, 2 * Math.PI);
-                    canvas.fill();
-                }
-            } else {
-                let point = solve(slope);
-                let newX;
-                let newY;
-
-                if (x < width/2) {
-                    newX = 0 - point;
-                    newX = newX + width/2;
-                    
-                    newY = 0 - point*slope;
-                    newY = newY + height/2;
-                } else {
-                    newX = point+width/2;
-                    newY = point*slope+height/2;
-                }
-                
-                clear();
-                canvas.beginPath();
-                canvas.fillStyle = smallColor;
-                canvas.arc(newX, newY, width / 100 * smallSize, 0, 2 * Math.PI);
-                canvas.fill();
-            }
-        }
-        direction = Math.round(direction);
-        console.log(direction);
     }
 }
-
-function distance (x1,y1,x2,y2) {
-    let Xd = Math.abs(x1 - x2);
-    let Yd = Math.abs(y1 - y2);
-    return Math.sqrt(Math.pow(Xd, 2) + Math.pow(Yd, 2));
-}
-
-document.addEventListener("touchmove", move);
-document.addEventListener("mousemove", move);
-
-canvasDOM.addEventListener("touchstart", function(e) {
-    let x = e.pageX - canvasDOM.offsetLeft;
-    let y = e.pageY - canvasDOM.offsetTop;
-    if (x <= (width / 2) + (width / 100 * smallSize) && x >= (width / 2) - (width / 100 * smallSize) && y <= (width / 2) + (width / 100 * smallSize) && y >= (width / 2) - (width / 100 * smallSize)) {
-        go = true;
-        clear();
-        canvas.beginPath();
-        canvas.fillStyle = smallColor;
-        canvas.arc(x, y, width / 100 * smallSize, 0, 2 * Math.PI);
-        canvas.fill();
-    }
-});
-
-canvasDOM.addEventListener("mousedown", function (e) {
-    let x = e.pageX - canvasDOM.offsetLeft;
-    let y = e.pageY - canvasDOM.offsetTop;
-    if (x <= (width / 2) + (width / 100 * smallSize) && x >= (width / 2) - (width / 100 * smallSize) && y <= (width / 2) + (width / 100 * smallSize) && y >= (width / 2) - (width / 100 * smallSize)) {
-        go = true;
-        clear();
-        canvas.beginPath();
-        canvas.fillStyle = smallColor;
-        canvas.arc(x, y, width / 100 * smallSize, 0, 2 * Math.PI);
-        canvas.fill();
-    }
-});
-
-document.addEventListener("touchend", function() {
-    go = false;
-    clear();
-    canvas.beginPath();
-    canvas.fillStyle = smallColor;
-    canvas.arc(width / 2, height / 2, width / 100 * smallSize, 0, 2 * Math.PI);
-    canvas.fill();
-    direction = false;
-});
-
-document.addEventListener("mouseup", function () {
-    go = false;
-    clear();
-    canvas.beginPath();
-    canvas.fillStyle = smallColor;
-    canvas.arc(width / 2, height / 2, width / 100 * smallSize, 0, 2 * Math.PI);
-    canvas.fill();
-    direction = false;
-});
-
-var degree = document.getElementById("degree");
-
-function run() {
-
-    degree.innerHTML = direction;
-
-    requestAnimationFrame(run);
-}
-
-requestAnimationFrame(run);
