@@ -1,1 +1,0 @@
-var joystick = new Joystick(document.querySelector('canvas'))
