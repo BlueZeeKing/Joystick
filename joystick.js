@@ -8,7 +8,7 @@ class Joystick {
         this.smallColor = smallColor
         this.smallSize = smallSize
 
-        this.value = 0 // set up the variable that hold data about the state of the joystick
+        this.pos = 0 // set up the variable that hold data about the state of the joystick
         this.clicked = false
 
         this.drawCircle(this.canvasDOM.width / 2, this.canvasDOM.height / 2, this.bigSize, this.bigColor) // draw the circles
@@ -22,6 +22,18 @@ class Joystick {
         document.addEventListener('mouseup', function (e) { // when the mouse is no longer pressed
             this.clicked = false // set clicked to false
             this.clear() // reset the circles
+            this.drawCircle(this.canvasDOM.width / 2, this.canvasDOM.height / 2, this.bigSize, this.bigColor)
+            this.drawCircle(this.canvasDOM.width / 2, this.canvasDOM.height / 2, this.smallSize, this.smallColor)
+        }.bind(this))
+
+        document.addEventListener('touchmove', this.move.bind(this)) // for mobile
+        canvasDOM.addEventListener('touchstart', function (e) {
+            this.clicked = true
+            this.move(e)
+        }.bind(this))
+        document.addEventListener('touchend', function (e) {
+            this.clicked = false
+            this.clear()
             this.drawCircle(this.canvasDOM.width / 2, this.canvasDOM.height / 2, this.bigSize, this.bigColor)
             this.drawCircle(this.canvasDOM.width / 2, this.canvasDOM.height / 2, this.smallSize, this.smallColor)
         }.bind(this))
@@ -64,13 +76,13 @@ class Joystick {
                 let nY = y * scalingFactor
                 this.drawCircle(nX + (this.canvasDOM.width / 2), nY + (this.canvasDOM.height / 2), this.smallSize, this.smallColor)
             }
-            if (x > 0) { // set the value to the angle between left and the circle
-                this.value = Math.round(this.degrees(Math.asin((Math.sin(this.radians(90)) / Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))) * y)))
+            if (x > 0) { // set the pos to the angle between left and the circle
+                this.pos = Math.round(this.degrees(Math.asin((Math.sin(this.radians(90)) / Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))) * y)))
             } else {
-                this.value = Math.round(this.degrees(Math.asin((Math.sin(this.radians(90)) / Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))) * y)))*-1 + 180
+                this.pos = Math.round(this.degrees(Math.asin((Math.sin(this.radians(90)) / Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2))) * y)))*-1 + 180
             }
-            if (this.value < 0) { // clean up the value
-                this.value = 360 + this.value
+            if (this.pos < 0) { // clean up the pos
+                this.pos = 360 + this.pos
             }
         }
     }
